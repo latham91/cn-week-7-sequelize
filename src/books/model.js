@@ -18,7 +18,7 @@ const Book = sequelize.define(
             defaultValue: "not specified",
         },
     },
-    { timestamps: true }
+    { timestamps: false }
 );
 
 module.exports = Book;
