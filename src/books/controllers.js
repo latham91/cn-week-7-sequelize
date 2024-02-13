@@ -27,26 +27,28 @@ exports.getAllBooks = async (req, res) => {
     }
 };
 
-// Update author
-// PUT /books/updateAuthor
-exports.updateBooksAuthor = async (req, res) => {
+// Update book
+// PUT /books/updateBook/:title
+exports.updateBookByTitle = async (req, res) => {
     try {
-        const book = await Book.update({ author: req.body.newAuthor }, { where: { title: req.body.title } });
+        const searchTitle = req.params.title;
+        const { title, author, genre } = req.body;
 
-        if (!book) {
-            return res.status(404).json({ success: false, message: `Book with title ${req.body.title} not found` });
+        if (!searchTitle) {
+            return res.status(400).json({ success: false, message: "searchTitle is required" });
         }
 
-        return res.status(200).json({
-            success: true,
-            message: `Author of ${req.body.title} updated`,
-            data: {
-                title: req.body.title,
-                author: req.body.newAuthor,
-            },
-        });
+        const book = await Book.update({ title, author, genre }, { where: { title: searchTitle } });
+
+        if (!book) {
+            return res.status(404).json({ success: false, message: `Book with title ${searchTitle} not found` });
+        }
+
+        return res
+            .status(200)
+            .json({ success: true, message: `${searchTitle} was updated`, updatedData: { title, author, genre } });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Error updating author", error: error.errors });
+        return res.status(500).json({ success: false, message: "Error updating book", error: error.errors });
     }
 };
 
@@ -54,20 +56,32 @@ exports.updateBooksAuthor = async (req, res) => {
 // DELETE /books/deleteBook
 exports.deleteBookByTitle = async (req, res) => {
     try {
-        const { title } = req.body;
+        const { title } = req.params;
 
         if (!title) {
             return res.status(400).json({ success: false, message: "Title is required" });
         }
 
-        const book = await Book.destroy({ where: { title: req.body.title } });
+        const book = await Book.destroy({ where: { title } });
 
         if (!book) {
-            return res.status(404).json({ success: false, message: `Book with title ${req.body.title} not found` });
+            return res.status(404).json({ success: false, message: `Book with title ${title} not found` });
         }
 
-        return res.status(200).json({ success: true, message: `${req.body.title} was deleted`, data: [] });
+        return res.status(200).json({ success: true, message: `${title} was deleted`, data: [] });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error deleting book", error: error.errors });
+    }
+};
+
+// Delete all books
+// DELETE /books
+exports.deleteAllBooks = async (req, res) => {
+    try {
+        const books = await Book.destroy({ truncate: true });
+
+        return res.status(200).json({ success: true, message: "All books were deleted", data: [] });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error deleting all books", error: error.errors });
     }
 };
