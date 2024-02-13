@@ -1,11 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const sequelize = require("./db/connection");
 
 // Get the port from .env or use 5001
 const PORT = process.env.PORT || 5001;
 
 // Create an express app
 const app = express();
+
+// Connect to the database
 
 // Add middleware to parse JSON
 app.use(express.json());
