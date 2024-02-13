@@ -4,6 +4,9 @@ const express = require("express");
 // Import the Book model
 const Book = require("./books/model");
 
+// Import routers
+const bookRouter = require("./books/routes");
+
 // Get the port from .env or use 5001
 const PORT = process.env.PORT || 5001;
 
@@ -30,6 +33,9 @@ app.get("/health", (req, res) => {
         res.status(500).json({ success: false, message: "API Error", error: error.message });
     }
 });
+
+// Routes
+app.use("/books", bookRouter);
 
 // Server listens on the port
 app.listen(PORT, () => {
