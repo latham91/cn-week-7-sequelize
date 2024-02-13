@@ -4,6 +4,12 @@ const Book = require("./model");
 // POST /books/addBook
 exports.addBook = async (req, res) => {
     try {
+        const { title } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ success: false, message: "Title is required" });
+        }
+
         const book = await Book.create({
             title: req.body.title,
             author: req.body.author,
@@ -40,7 +46,7 @@ exports.updateBookByTitle = async (req, res) => {
 
         const book = await Book.update({ title, author, genre }, { where: { title: searchTitle } });
 
-        if (!book) {
+        if (book[0] === 0) {
             return res.status(404).json({ success: false, message: `Book with title ${searchTitle} not found` });
         }
 
@@ -64,7 +70,7 @@ exports.deleteBookByTitle = async (req, res) => {
 
         const book = await Book.destroy({ where: { title } });
 
-        if (!book) {
+        if (book[0] === 0) {
             return res.status(404).json({ success: false, message: `Book with title ${title} not found` });
         }
 
@@ -78,8 +84,7 @@ exports.deleteBookByTitle = async (req, res) => {
 // DELETE /books
 exports.deleteAllBooks = async (req, res) => {
     try {
-        const books = await Book.destroy({ truncate: true });
-
+        await Book.destroy({ truncate: true });
         return res.status(200).json({ success: true, message: "All books were deleted", data: [] });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error deleting all books", error: error.errors });
