@@ -30,7 +30,10 @@ exports.addBook = async (req, res) => {
 // GET /books
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.findAll({ include: ["Genre", "Author"] });
+        const books = await Book.findAll({
+            attributes: { exclude: ["GenreId", "AuthorId"] },
+            include: ["Genre", "Author"],
+        });
         return res.status(200).json({ success: true, message: "All books returned", count: books.length, data: books });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error getting books", error: error.errors });
@@ -96,13 +99,15 @@ exports.deleteAllBooks = async (req, res) => {
 };
 
 // Get a book by author
-// GET /books/author/:author
+// GET /books/author/:authorId
 exports.getBookByAuthor = async (req, res) => {
     try {
-        const books = await Book.findAll({ where: { author: req.params.author } });
+        const books = await Book.findAll({ where: { authorId: req.params.authorId } });
 
         if (books.length === 0) {
-            return res.status(404).json({ success: false, message: `Books by author ${req.params.author} not found` });
+            return res
+                .status(404)
+                .json({ success: false, message: `Books by author ${req.params.authorId} not found` });
         }
 
         return res

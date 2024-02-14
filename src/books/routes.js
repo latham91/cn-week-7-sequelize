@@ -15,6 +15,6 @@ bookRouter.post("/addBook", addBook);
 bookRouter.put("/updateBook/:title", updateBookByTitle);
 bookRouter.delete("/deleteBook/:title", deleteBookByTitle);
 bookRouter.delete("/", deleteAllBooks);
-bookRouter.get("/author/:author", getBookByAuthor);
+bookRouter.get("/author/:authorId", getBookByAuthor);
 
 module.exports = bookRouter;
