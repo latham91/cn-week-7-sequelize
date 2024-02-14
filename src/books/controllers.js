@@ -34,6 +34,7 @@ exports.getAllBooks = async (req, res) => {
             attributes: { exclude: ["GenreId", "AuthorId"] },
             include: ["Genre", "Author"],
         });
+
         return res.status(200).json({ success: true, message: "All books returned", count: books.length, data: books });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error getting books", error: error.errors });
@@ -112,8 +113,29 @@ exports.getBookByAuthor = async (req, res) => {
 
         return res
             .status(200)
-            .json({ success: true, message: `Books by author ${req.params.author} returned`, data: books });
+            .json({ success: true, message: `Books by authorId ${req.params.authorId} returned`, data: books });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error getting book by author", error: error.errors });
+    }
+};
+
+// Get a book by title
+// GET /books/:title
+exports.getBookByTitle = async (req, res) => {
+    try {
+        const { title } = req.params;
+        const book = await Book.findOne({
+            where: { title },
+            attributes: { exclude: ["GenreId", "AuthorId"] },
+            include: ["Genre", "Author"],
+        });
+
+        if (!book) {
+            return res.status(404).json({ success: false, message: `Book with title ${title} not found` });
+        }
+
+        return res.status(200).json({ success: true, message: `Book with title ${title} returned`, data: book });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error getting book by title", error: error.errors });
     }
 };

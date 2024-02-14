@@ -19,10 +19,10 @@ const app = express();
 
 const syncTables = async () => {
     // Define the relationships
-    Genre.hasOne(Book);
-    Book.belongsTo(Genre);
+    Genre.hasMany(Book, { foreignKey: "GenreId", sourceKey: "id" });
+    Book.belongsTo(Genre, { foreignKey: "GenreId", targetKey: "id" });
 
-    Author.hasOne(Book);
+    Author.hasMany(Book);
     Book.belongsTo(Author);
 
     // Sync models with the database
