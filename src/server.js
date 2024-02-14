@@ -6,6 +6,7 @@ const Book = require("./books/model");
 
 // Import routers
 const bookRouter = require("./books/routes");
+const genreRouter = require("./genres/routes");
 
 // Get the port from .env or use 5001
 const PORT = process.env.PORT || 5001;
@@ -36,6 +37,7 @@ app.get("/health", (req, res) => {
 
 // Routes
 app.use("/books", bookRouter);
+app.use("/genres", genreRouter);
 
 // Server listens on the port
 app.listen(PORT, () => {

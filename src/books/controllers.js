@@ -90,3 +90,21 @@ exports.deleteAllBooks = async (req, res) => {
         return res.status(500).json({ success: false, message: "Error deleting all books", error: error.errors });
     }
 };
+
+// Get a book by author
+// GET /books/author/:author
+exports.getBookByAuthor = async (req, res) => {
+    try {
+        const books = await Book.findAll({ where: { author: req.params.author } });
+
+        if (books.length === 0) {
+            return res.status(404).json({ success: false, message: `Books by author ${req.params.author} not found` });
+        }
+
+        return res
+            .status(200)
+            .json({ success: true, message: `Books by author ${req.params.author} returned`, data: books });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error getting book by author", error: error.errors });
+    }
+};
