@@ -3,6 +3,7 @@ const express = require("express");
 
 // Import the Book model
 const Book = require("./books/model");
+const Genre = require("./genres/model");
 
 // Import routers
 const bookRouter = require("./books/routes");
@@ -18,6 +19,7 @@ const syncTables = async () => {
     try {
         // Sync models with the database
         await Book.sync();
+        await Genre.sync();
     } catch (error) {
         console.log("Error syncing the table: ", error);
     }

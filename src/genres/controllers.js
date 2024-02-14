@@ -3,6 +3,11 @@ const Genre = require("./model");
 exports.getAllGenres = async (req, res) => {
     try {
         const genres = await Genre.findAll();
+
+        if (genres.length === 0) {
+            return res.status(404).json({ success: false, count: genres.length, message: "No genres found" });
+        }
+
         return res
             .status(200)
             .json({ success: true, message: "All genres returned", count: genres.length, data: genres });
