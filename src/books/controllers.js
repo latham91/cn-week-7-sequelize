@@ -4,16 +4,20 @@ const Book = require("./model");
 // POST /books/addBook
 exports.addBook = async (req, res) => {
     try {
-        const { title } = req.body;
+        const { title, author, GenreId, AuthorId } = req.body;
 
         if (!title) {
             return res.status(400).json({ success: false, message: "Title is required" });
         }
 
+        if (!GenreId) {
+            return res.status(400).json({ success: false, message: "GenreId is required" });
+        }
+
         const book = await Book.create({
-            title: req.body.title,
-            author: req.body.author,
-            genre: req.body.genre,
+            title,
+            GenreId,
+            AuthorId,
         });
 
         return res.status(201).json({ success: true, message: `${book.title} was added`, data: book });
@@ -26,7 +30,7 @@ exports.addBook = async (req, res) => {
 // GET /books
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.findAll();
+        const books = await Book.findAll({ include: ["Genre", "Author"] });
         return res.status(200).json({ success: true, message: "All books returned", count: books.length, data: books });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error getting books", error: error.errors });

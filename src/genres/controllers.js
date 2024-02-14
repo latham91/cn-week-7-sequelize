@@ -1,5 +1,7 @@
 const Genre = require("./model");
 
+// Get all genres
+// GET /genres
 exports.getAllGenres = async (req, res) => {
     try {
         const genres = await Genre.findAll();
@@ -16,6 +18,8 @@ exports.getAllGenres = async (req, res) => {
     }
 };
 
+// Add new genre
+// POST /genres/addGenre
 exports.addNewGenre = async (req, res) => {
     try {
         const { name } = req.body;

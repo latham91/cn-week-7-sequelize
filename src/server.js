@@ -4,10 +4,12 @@ const express = require("express");
 // Import the Book model
 const Book = require("./books/model");
 const Genre = require("./genres/model");
+const Author = require("./authors/model");
 
 // Import routers
 const bookRouter = require("./books/routes");
 const genreRouter = require("./genres/routes");
+const authorRouter = require("./authors/routes");
 
 // Get the port from .env or use 5001
 const PORT = process.env.PORT || 5001;
@@ -16,13 +18,17 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 
 const syncTables = async () => {
-    try {
-        // Sync models with the database
-        await Book.sync();
-        await Genre.sync();
-    } catch (error) {
-        console.log("Error syncing the table: ", error);
-    }
+    // Define the relationships
+    Genre.hasOne(Book);
+    Book.belongsTo(Genre);
+
+    Author.hasOne(Book);
+    Book.belongsTo(Author);
+
+    // Sync models with the database
+    await Genre.sync();
+    await Author.sync();
+    await Book.sync();
 };
 
 // Add middleware to parse JSON
@@ -40,6 +46,7 @@ app.get("/health", (req, res) => {
 // Routes
 app.use("/books", bookRouter);
 app.use("/genres", genreRouter);
+app.use("/authors", authorRouter);
 
 // Server listens on the port
 app.listen(PORT, () => {
