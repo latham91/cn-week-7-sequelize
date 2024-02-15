@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const sequelize = require("./db/connection");
 
 // Import the Book model
 const Book = require("./books/model");
@@ -19,8 +20,8 @@ const app = express();
 
 const syncTables = async () => {
     // Define the relationships
-    Genre.hasMany(Book, { foreignKey: "GenreId", sourceKey: "id" });
-    Book.belongsTo(Genre, { foreignKey: "GenreId", targetKey: "id" });
+    Genre.hasMany(Book);
+    Book.belongsTo(Genre);
 
     Author.hasMany(Book);
     Book.belongsTo(Author);
@@ -52,5 +53,6 @@ app.use("/authors", authorRouter);
 app.listen(PORT, () => {
     // Sync the tables
     syncTables();
+
     console.log(`Server is running on port ${PORT}`);
 });

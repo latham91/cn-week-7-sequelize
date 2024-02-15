@@ -1,26 +1,51 @@
 const Book = require("./model");
+const Genre = require("../genres/model");
+const Author = require("../authors/model");
+
+const returnDetails = (exclude, include) => {
+    return {
+        attributes: { exclude: [`${exclude}`] },
+        include: [`${include}`],
+    };
+};
 
 // Add a book
 // POST /books/addBook
 exports.addBook = async (req, res) => {
     try {
-        const { title, author, GenreId, AuthorId } = req.body;
+        const { title, genre, author } = req.body;
 
         if (!title) {
             return res.status(400).json({ success: false, message: "Title is required" });
         }
 
-        if (!GenreId) {
-            return res.status(400).json({ success: false, message: "GenreId is required" });
+        if (!genre) {
+            return res.status(400).json({ success: false, message: "Genre is required" });
         }
 
-        const book = await Book.create({
-            title,
-            GenreId,
-            AuthorId,
-        });
+        if (!author) {
+            return res.status(400).json({ success: false, message: "Author is required" });
+        }
 
-        return res.status(201).json({ success: true, message: `${book.title} was added`, data: book });
+        const genreExists = await Genre.findOne({ where: { name: genre } });
+
+        if (!genreExists) {
+            return res.status(404).json({ success: false, message: `Genre ${genre} not found` });
+        }
+
+        const authorExists = await Author.findOne({ where: { name: author } });
+
+        if (!authorExists) {
+            return res.status(404).json({ success: false, message: `Author ${author} not found` });
+        }
+
+        const book = await Book.create({ title, GenreId: genreExists.id, AuthorId: authorExists.id });
+
+        return res.status(201).json({
+            success: true,
+            message: `${book.title} was added`,
+            data: { id: book.id, title: book.title, author: authorExists.name, genre: genreExists.name },
+        });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error adding book", error: error.errors });
     }
