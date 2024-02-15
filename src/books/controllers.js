@@ -2,13 +2,6 @@ const Book = require("./model");
 const Genre = require("../genres/model");
 const Author = require("../authors/model");
 
-const returnDetails = (exclude, include) => {
-    return {
-        attributes: { exclude: [`${exclude}`] },
-        include: [`${include}`],
-    };
-};
-
 // Add a book
 // POST /books/addBook
 exports.addBook = async (req, res) => {
@@ -74,7 +67,7 @@ exports.updateBookByTitle = async (req, res) => {
         const { title, author, genre } = req.body;
 
         if (!searchTitle) {
-            return res.status(400).json({ success: false, message: "searchTitle is required" });
+            return res.status(400).json({ success: false, message: "searchTitle params is required" });
         }
 
         const book = await Book.update({ title, author, genre }, { where: { title: searchTitle } });
